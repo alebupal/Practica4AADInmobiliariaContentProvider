@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.alejandro.practica4aadinmobiliariacontentprovider.FragmentoFotos"
+    android:orientation="vertical">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="0.5">
+
+        <ImageView
+            android:layout_width="241dp"
+            android:layout_height="241dp"
+            android:id="@+id/imageView"
+            android:src="@drawable/seleccion" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btAnterior"
+            android:id="@+id/btAnterior"
+            android:layout_gravity="left|bottom"
+            android:onClick="anterior"
+            android:enabled="false" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btAnadir"
+            android:layout_gravity="center_horizontal|bottom"
+            android:onClick="hacerFoto"
+            android:enabled="false"
+            android:text="@string/anadirFoto" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btBorrar"
+            android:onClick="eliminarFoto"
+            android:enabled="false"
+            android:text="Eliminar" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btSiguiente"
+            android:id="@+id/btSiguiente"
+            android:layout_gravity="right|bottom"
+            android:onClick="siguiente"
+            android:enabled="false" />
+    </LinearLayout>
+
+</LinearLayout>
