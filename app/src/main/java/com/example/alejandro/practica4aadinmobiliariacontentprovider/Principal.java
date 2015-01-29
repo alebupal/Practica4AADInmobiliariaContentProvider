@@ -2,15 +2,17 @@ package com.example.alejandro.practica4aadinmobiliariacontentprovider;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -39,7 +40,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 
-public class Principal extends ActionBarActivity{
+public class Principal extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private AdaptadorCursor ac;
     private Cursor cu;
@@ -52,6 +53,7 @@ public class Principal extends ActionBarActivity{
     private int idFoto;
     private Button btAnterior,btSiguiente,btBorrar,btAnadir;
     private ContentValues datosInmuebleNuevo;
+    private AlertDialog alerta;
 
 
 
@@ -59,8 +61,8 @@ public class Principal extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
-        visualizarInmuebles();
 
+        visualizarInmuebles();
         final ListView ls = (ListView) findViewById(R.id.listView);
         ac = new AdaptadorCursor(this, R.layout.lista_detalle, cu);
         ls.setAdapter(ac);
@@ -113,6 +115,8 @@ public class Principal extends ActionBarActivity{
             //ordenarLocalidad();
         }else if (id == R.id.action_ordenarDireccion) {
             //ordenarDireccion();
+        }else if (id == R.id.action_usuario) {
+            nuevoUsuario();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -150,6 +154,7 @@ public class Principal extends ActionBarActivity{
         ac = new AdaptadorCursor(this, R.layout.lista_detalle, cu);
         ls.setAdapter(ac);
         registerForContextMenu(ls);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     private void cargarCursor(){
@@ -395,11 +400,10 @@ public class Principal extends ActionBarActivity{
             datosInmuebleNuevo = datosInmueble(inmueble);
             Log.v("asdasd",datosInmuebleNuevo.get(Contrato.TablaInmueble.LOCALIDAD).toString()+"");
             getContentResolver().insert(uri, datosInmuebleNuevo);
-            ac.notifyDataSetChanged();
+            //ac.notifyDataSetChanged();
             tostada(getString(R.string.mensaje_anadir));
 
         }else if (resultCode == RESULT_OK && requestCode == HACER_FOTO) {
-
 
             Bitmap foto = (Bitmap)data.getExtras().get("data");
             FileOutputStream salida;
@@ -416,7 +420,58 @@ public class Principal extends ActionBarActivity{
     }
 
 
+    private void guardarSharedPreferences(String usuario) {
+        SharedPreferences pc;
+        SharedPreferences.Editor ed;
+        pc = getSharedPreferences("preferencia", MODE_PRIVATE);
+        ed = pc.edit();
+        ed.putString("usuario", usuario);
+        ed.apply();
+    }
+
+    private String leerSharedPreferences() {
+        SharedPreferences pc;
+        pc = getSharedPreferences("preferencia", MODE_PRIVATE);
+        return pc.getString("usuario","");
+    }
+    private boolean nuevoUsuario(){
+        String usuarioActual = leerSharedPreferences();
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Usuario nuevo");
+        LayoutInflater inflater = LayoutInflater.from(this);
+        final View vista = inflater.inflate(R.layout.usuario, null);
+        alertDialog.setView(vista);
+
+        final EditText texto = (EditText)vista.findViewById(R.id.etUsuario);
+        texto.setText(usuarioActual);
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+                if(!texto.getText().toString().equals("")){
+                    guardarSharedPreferences(texto.getText().toString());
+                }
+            }
+        });
+        alerta = alertDialog.create();
+        alerta.show();
+        return true;
+    }
 
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = Contrato.TablaInmueble.CONTENT_URI;
+        return new CursorLoader(this, uri, null, null, null,Contrato.TablaInmueble.CALLE +" collate localized asc");
+    }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        ac.swapCursor(data);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        ac.swapCursor(null);
+    }
 }

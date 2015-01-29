@@ -14,6 +14,7 @@
     <string name="m_foto">Añadir Foto</string>
     <string name="m_ordenarLocalidad">Ordenar localidad</string>
     <string name="m_ordenarDireccion">Ordenar direccion</string>
+    <string name="m_usuario">Anadir usuario</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_anadir">Anadir</string>
     <string name="mensaje_eliminar">Se ha eliminado correctamente.</string>
