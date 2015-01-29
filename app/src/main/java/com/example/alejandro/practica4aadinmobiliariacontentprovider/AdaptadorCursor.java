@@ -31,13 +31,9 @@ public class AdaptadorCursor extends CursorAdapter{
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-         LayoutInflater i = LayoutInflater.from(parent.getContext());
+        LayoutInflater i = LayoutInflater.from(parent.getContext());
         View v = i.inflate(R.layout.lista_detalle, parent, false);
         return v;
-
-
-
-
     }
 
     @Override

@@ -4,12 +4,6 @@
     <item android:id="@+id/action_anadir"
         android:title="@string/m_anadir"
         android:orderInCategory="100" />
-    <item android:id="@+id/action_ordenarLocalidad"
-        android:title="@string/m_ordenarLocalidad"
-        android:orderInCategory="100"/>
-    <item android:id="@+id/action_ordenarDireccion"
-        android:title="@string/m_ordenarDireccion"
-        android:orderInCategory="100" />
     <item android:id="@+id/action_usuario"
         android:title="@string/m_usuario"
         android:orderInCategory="100" />

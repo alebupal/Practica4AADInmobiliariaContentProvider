@@ -62,6 +62,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
+        cargarCursor();
         visualizarInmuebles();
         final ListView ls = (ListView) findViewById(R.id.listView);
         ac = new AdaptadorCursor(this, R.layout.lista_detalle, cu);
@@ -111,10 +112,6 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         int id = item.getItemId();
         if (id == R.id.action_anadir) {
             anadir();
-        }else if (id == R.id.action_ordenarLocalidad) {
-            //ordenarLocalidad();
-        }else if (id == R.id.action_ordenarDireccion) {
-            //ordenarDireccion();
         }else if (id == R.id.action_usuario) {
             nuevoUsuario();
         }
@@ -150,7 +147,6 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
 
     public void visualizarInmuebles() {
         final ListView ls = (ListView) findViewById(R.id.listView);
-        cargarCursor();
         ac = new AdaptadorCursor(this, R.layout.lista_detalle, cu);
         ls.setAdapter(ac);
         registerForContextMenu(ls);
@@ -235,12 +231,12 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                     Inmueble inmuebleAntiguo = new Inmueble(id,precio,localidad,direccion,tipo,subido);
                     Inmueble inmuebleNuevo = new Inmueble(id,Integer.parseInt(etEditarPrecio.getText().toString()), etEditarLocalidad.getText().toString(), etEditarDireccion.getText().toString(),tipoNuevo,subido);
                     Uri uri = Contrato.TablaInmueble.CONTENT_URI;
-
                     datosInmuebleNuevo=datosInmueble(inmuebleNuevo);
-
+                    datosInmuebleNuevo=datosInmueble(inmuebleNuevo);
                     String where = Contrato.TablaInmueble._ID + " = ?";
                     String [] args = new String[]{inmuebleAntiguo.getId()+""};
                     getContentResolver().update(uri, datosInmuebleNuevo, where, args);
+
                 }
             }
         });
@@ -428,7 +424,6 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         ed.putString("usuario", usuario);
         ed.apply();
     }
-
     private String leerSharedPreferences() {
         SharedPreferences pc;
         pc = getSharedPreferences("preferencia", MODE_PRIVATE);
@@ -457,7 +452,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         return true;
     }
 
-
+  /*LOADER*/
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = Contrato.TablaInmueble.CONTENT_URI;
@@ -474,4 +469,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
     public void onLoaderReset(Loader<Cursor> loader) {
         ac.swapCursor(null);
     }
+
+
+
 }
