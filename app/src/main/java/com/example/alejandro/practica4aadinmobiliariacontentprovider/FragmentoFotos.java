@@ -33,13 +33,6 @@ import java.util.GregorianCalendar;
  */
 public class FragmentoFotos extends Fragment {
     private View v;
-    private int id;
-    private int posicion=0;
-    private ArrayList<Bitmap> arrayFotos;
-    private Button btSiguiente,btAnterior,btBorrar,btAnadir;
-    private int IDACTIVIDADFOTO=2;
-
-    String nombrefoto;
 
     public FragmentoFotos() {
         // Required empty public constructor
@@ -61,16 +54,6 @@ public class FragmentoFotos extends Fragment {
             iv.setImageDrawable(myDrawable);
         }else{
             iv.setImageBitmap(arrayFotos.get(0));
-        }
-    }
-    public void ultimaFoto(ArrayList<Bitmap> arrayFotos){
-
-        ImageView iv = (ImageView)v.findViewById(R.id.imageView);
-        if(arrayFotos.size()==0){
-            Drawable myDrawable = getResources().getDrawable(R.drawable.foto);
-            iv.setImageDrawable(myDrawable);
-        }else{
-            iv.setImageBitmap(arrayFotos.get(arrayFotos.size()));
         }
     }
 

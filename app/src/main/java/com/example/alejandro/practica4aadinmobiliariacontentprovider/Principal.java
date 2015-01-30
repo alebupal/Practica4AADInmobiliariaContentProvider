@@ -88,9 +88,9 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                     btAnterior.setEnabled(true);
                     btBorrar.setEnabled(true);
                     btAnadir.setEnabled(true);
-                    File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
-                    Log.v("id pulsado",c.getString(0));
                     idFoto=Integer.parseInt(c.getString(0));
+                    File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+idFoto));
+                    Log.v("id pulsado",c.getString(0));
                     arrayFotos=fFotos.insertarFotos(arrayFotos,Integer.parseInt(c.getString(0)),carpetaFotos);
                     fFotos.primeraFoto(arrayFotos);
                 }else{
@@ -162,10 +162,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                 Contrato.TablaInmueble.TIPO,
                 Contrato.TablaInmueble.PRECIO,
                 Contrato.TablaInmueble.SUBIDO};
-        String sortOrder = Contrato.TablaInmueble.LOCALIDAD + ", " +
-                Contrato.TablaInmueble.TIPO + ", " +
-                Contrato.TablaInmueble.CALLE;
-        cu = this.getContentResolver().query(uri, projection, null, null, sortOrder);
+        cu = this.getContentResolver().query(uri, projection, null, null, null);
     }
 
     public boolean anadir() {
@@ -255,7 +252,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                 String where = Contrato.TablaInmueble._ID + " = ?";
                 String[] args = new String[]{idInmueble+""};
                 getContentResolver().delete(uri,where, args);
-                eliminarFotoPorID(idInmueble);
+                eliminarCarpetaFotoPorID(idInmueble);
             }
         });
         alert.setNegativeButton(android.R.string.no, null);
@@ -263,8 +260,18 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         return true;
     }
 
-    public void eliminarFotoPorID(final int id){
-        File carpetaFotos  = new File(String.valueOf(getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
+    public void eliminarCarpetaFotoPorID(final int id){
+        File carpetaFotos  = new File(String.valueOf(getExternalFilesDir(Environment.DIRECTORY_PICTURES))+"/"+id);
+        if (carpetaFotos.isDirectory()) {
+            String[] children = carpetaFotos.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(carpetaFotos, children[i]).delete();
+            }
+            carpetaFotos.delete();
+        }
+
+        /*
+        carpetaFotos.delete();
         String[] archivosCarpetaFotos = carpetaFotos.list();
         for (int i=0;i<archivosCarpetaFotos.length;i++){
             if (archivosCarpetaFotos[i].indexOf("inmueble_"+id) != -1){
@@ -272,10 +279,10 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                 archivoaBorrar.delete();
 
             }
-        }
 
+
+        }*/
     }
-
     private Inmueble inmueblePosicion(int posicion){
         cu.moveToPosition(posicion);
         int id = cu.getInt(0);
@@ -356,12 +363,13 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 int cont=0;
-                File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
+                File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+idFoto));
                 String[] archivosCarpetaFotos = carpetaFotos.list();
+                Log.v("nFotos",archivosCarpetaFotos.length+"");
                 for (int i=0;i<archivosCarpetaFotos.length;i++){
-                    if (archivosCarpetaFotos[i].indexOf("inmueble_"+idFoto) != -1){
+                    if(archivosCarpetaFotos[i].indexOf("inmueble_"+idFoto) != -1){
                         if (cont==posicion) {
-                            File archivoaBorrar = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)), archivosCarpetaFotos[i]);
+                            File archivoaBorrar = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES))+"/"+idFoto, archivosCarpetaFotos[i]);
                             archivoaBorrar.delete();
                         }
                         cont++;
@@ -396,6 +404,12 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
             datosInmuebleNuevo = datosInmueble(inmueble);
             Log.v("asdasd",datosInmuebleNuevo.get(Contrato.TablaInmueble.LOCALIDAD).toString()+"");
             getContentResolver().insert(uri, datosInmuebleNuevo);
+            cargarCursor();
+            cu.moveToLast();
+
+            Log.v("idUltimo",cu.getString(0)+"");
+            File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+(cu.getString(0))));
+            carpetaFotos.mkdir();
             //ac.notifyDataSetChanged();
             tostada(getString(R.string.mensaje_anadir));
 
@@ -407,7 +421,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
             try {
                 String[] fecha=getFecha().split("-");
                 nombrefoto="inmueble_"+idFoto+"_"+fecha[0]+"_"+fecha[1]+"_"+fecha[2]+"_"+fecha[3]+"_"+fecha[4]+"_"+fecha[5];
-                salida = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+nombrefoto+".jpg");
+                salida = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+idFoto+"/"+nombrefoto+".jpg");
                 foto.compress(Bitmap.CompressFormat.JPEG, 90, salida);
             } catch (FileNotFoundException e) {
             }

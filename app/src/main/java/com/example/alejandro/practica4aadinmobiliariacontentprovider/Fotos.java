@@ -62,19 +62,13 @@ public class Fotos extends Activity {
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 int cont=0;
-                File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
+                File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES))+"/"+id);
                 String[] archivosCarpetaFotos = carpetaFotos.list();
                 for (int i=0;i<archivosCarpetaFotos.length;i++){
-                    if (archivosCarpetaFotos[i].indexOf("inmueble_"+id) != -1){
                         if (cont==posicion) {
-                            File archivoaBorrar = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)), archivosCarpetaFotos[i]);
-                            // Log.v("archivoborrado",""+archivoaBorrar);
-                            // Log.v("archivo",""+archivosCarpetaFotos[i]);
-                            //Log.v("posicion",""+posicion);
+                            File archivoaBorrar = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES))+"/"+id, archivosCarpetaFotos[i]);
                             archivoaBorrar.delete();
                         }
-                        cont++;
-                    }
                 }
             }
         });
@@ -98,7 +92,7 @@ public class Fotos extends Activity {
             try {
                 String[] fecha=getFecha().split("-");
                 nombrefoto="inmueble_"+id+"_"+fecha[0]+"_"+fecha[1]+"_"+fecha[2]+"_"+fecha[3]+"_"+fecha[4]+"_"+fecha[5];
-                salida = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+nombrefoto+".jpg");
+                salida = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+id+"/"+nombrefoto+".jpg");
                 foto.compress(Bitmap.CompressFormat.JPEG, 90, salida);
             } catch (FileNotFoundException e) {
 
@@ -117,7 +111,7 @@ public class Fotos extends Activity {
     }
 
     public ArrayList<Bitmap> insertarFotos(ArrayList<Bitmap> arrayFotos){
-        File carpetaFotos = new File(String.valueOf(getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
+        File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+id));
         String[] archivosCarpetaFotos = carpetaFotos.list();
         Bitmap bm;
         for (int i=0;i<archivosCarpetaFotos.length;i++){
