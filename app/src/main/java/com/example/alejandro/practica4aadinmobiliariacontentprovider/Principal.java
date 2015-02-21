@@ -587,24 +587,22 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         }
     }
     public void cambiarip(){
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("IP nueva");
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(getString(R.string.m_ip));
         LayoutInflater inflater = LayoutInflater.from(this);
         final View vista = inflater.inflate(R.layout.dialogoip, null);
-        alertDialog.setView(vista);
+        alert.setView(vista);
 
         final EditText etIP = (EditText)vista.findViewById(R.id.etIP);
-        alertDialog.setCancelable(false);
-        alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+        alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
                 if(!etIP.getText().toString().trim().equals("")){
                     ip=etIP.getText().toString();
                 }
             }
         });
-        alerta = alertDialog.create();
-        alerta.show();
+        alert.setNegativeButton(android.R.string.no, null);
+        alert.show();
     }
 
 
