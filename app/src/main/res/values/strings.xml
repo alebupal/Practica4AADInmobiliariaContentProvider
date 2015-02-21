@@ -15,11 +15,14 @@
     <string name="m_ordenarLocalidad">Ordenar localidad</string>
     <string name="m_ordenarDireccion">Ordenar direccion</string>
     <string name="m_usuario">Anadir usuario</string>
+    <string name="m_subir">Subir inmuebles</string>
+    <string name="m_ip">Cambiar ip</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_anadir">Anadir</string>
     <string name="mensaje_eliminar">Se ha eliminado correctamente.</string>
     <string name="mensaje_editar">Se ha editado correctamente.</string>
     <string name="mensaje_anadir">Se ha añadido correctamente.</string>
+    <string name="mensaje_subir">Inmuebles subidos correctamente</string>
     <string name="titulo_editar">Editar inmueble</string>
     <string name="duplicado">Inmueble duplicada</string>
     <string name="vacio">Algun/os campos vacíos</string>

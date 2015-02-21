@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -30,9 +31,21 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +67,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
     private Button btAnterior,btSiguiente,btBorrar,btAnadir;
     private ContentValues datosInmuebleNuevo;
     private AlertDialog alerta;
+    private String ip="192.168.1.37:8080";
 
 
 
@@ -114,6 +128,11 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
             anadir();
         }else if (id == R.id.action_usuario) {
             nuevoUsuario();
+        }else if (id == R.id.action_subir) {
+            Subir s=new Subir();
+            s.execute();
+        }else if (id == R.id.action_ip) {
+            cambiarip();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -484,6 +503,109 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
         ac.swapCursor(null);
     }
 
+    class Subir extends AsyncTask<String,Integer,String> {
+
+        public String postFile(String urlPeticion, String nombreParametro, String nombreArchivo) {
+            String resultado="";
+            int status=0;
+            try {
+                URL url = new URL(urlPeticion);
+                HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+                conexion.setDoOutput(true);
+                conexion.setRequestMethod("POST");
+                FileBody fileBody = new FileBody(new File(nombreArchivo));
+                MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.STRICT);
+                multipartEntity.addPart(nombreParametro, fileBody);
+                multipartEntity.addPart("nombre", new StringBody("valor"));
+                conexion.setRequestProperty("Content-Type", multipartEntity.getContentType().getValue());
+                OutputStream out = conexion.getOutputStream();
+                try {
+                    multipartEntity.writeTo(out);
+                } finally {
+                    out.close();
+                }
+                BufferedReader in = new BufferedReader(new InputStreamReader(conexion.getInputStream()));
+                String decodedString;
+                while ((decodedString = in.readLine()) != null) {
+                    resultado+=decodedString+"\n";
+                }
+                in.close();
+                status = conexion.getResponseCode();
+            } catch (MalformedURLException ex) {
+                return ex.toString();
+            } catch (IOException ex) {
+                return ex.toString();
+            }
+            return resultado+"\n"+status;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String r="";
+            try {
+                cu.moveToFirst();
+                for (int i=0;i<cu.getCount();i++){
+
+                    Log.v("tipo",cu.getString(3).toString());
+                    URL url = new URL("http://"+ip+"/Practica4AADInmobiliariaHibernate/control?target=android&op=insert&action=op&tipo="
+                            +cu.getString(3).toString()+"&calle="+cu.getString(1).toString().replace(" ","%20")+"&localidad="+cu.getString(2).toString().replace(" ","%20")+"&precio="+cu.getString(4).toString().replace(" ","%20")+"&usuario="+leerSharedPreferences().replace(" ","%20"));
+                    BufferedReader b = new BufferedReader(new InputStreamReader(url.openStream()));
+                    String idServidor = b.readLine();
+                    b.close();
+                    Log.v("idServidor",idServidor);
+                    File carpetaFotos  = new File(String.valueOf(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+cu.getString(0).toString()));
+                    String[] archivosCarpetaFotos = carpetaFotos.list();
+                    for (int j=0;j<archivosCarpetaFotos.length;j++){
+                        r=postFile("http://"+ip+"/Practica4AADInmobiliariaHibernate/control?target=inmueble&op=subir&action=op&idInmuebleFoto="+idServidor,"archivo",carpetaFotos.getAbsolutePath() + "/" + archivosCarpetaFotos[j]);
+                        Log.v("foto",carpetaFotos.getAbsolutePath() + "/" + archivosCarpetaFotos[j]);
+
+                    }
+                    for (int j=0;j<archivosCarpetaFotos.length;j++){
+                        File f=new File(carpetaFotos.getAbsolutePath() + "/" + archivosCarpetaFotos[j]);
+                        f.delete();
+                    }
+                    Uri uri= Contrato.TablaInmueble.CONTENT_URI;
+                    String where= Contrato.TablaInmueble._ID+"=?";
+                    String[] args= new String[]{cu.getString(0).toString()+""};
+                    int v=getContentResolver().delete(uri,where,args);
+                    cu.moveToNext();
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return r;
+        }
+
+        @Override
+        protected void onPostExecute(String strings) {
+            tostada(getString(R.string.mensaje_subir));
+            cargarCursor();
+            visualizarInmuebles();
+        }
+    }
+    public void cambiarip(){
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("IP nueva");
+        LayoutInflater inflater = LayoutInflater.from(this);
+        final View vista = inflater.inflate(R.layout.dialogoip, null);
+        alertDialog.setView(vista);
+
+        final EditText etIP = (EditText)vista.findViewById(R.id.etIP);
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+                if(!etIP.getText().toString().trim().equals("")){
+                    ip=etIP.getText().toString();
+                }
+            }
+        });
+        alerta = alertDialog.create();
+        alerta.show();
+    }
 
 
 }
