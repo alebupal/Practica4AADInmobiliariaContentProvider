@@ -568,7 +568,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                     Uri uri= Contrato.TablaInmueble.CONTENT_URI;
                     String where= Contrato.TablaInmueble._ID+"=?";
                     String[] args= new String[]{cu.getString(0).toString()+""};
-                    int v=getContentResolver().delete(uri,where,args);
+                    getContentResolver().delete(uri,where,args);
                     cu.moveToNext();
                 }
             } catch (MalformedURLException e) {
