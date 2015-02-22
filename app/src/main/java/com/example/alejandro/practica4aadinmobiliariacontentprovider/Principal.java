@@ -584,7 +584,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
 
         @Override
         protected void onPostExecute(String strings) {
-            if(error==true) {
+            if(error==false) {
                 tostada(getString(R.string.mensaje_subir));
             }else{
                 tostada(getString(R.string.mensaje_error));
