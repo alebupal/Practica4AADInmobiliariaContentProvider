@@ -23,6 +23,7 @@
     <string name="mensaje_editar">Se ha editado correctamente.</string>
     <string name="mensaje_anadir">Se ha añadido correctamente.</string>
     <string name="mensaje_subir">Inmuebles subidos correctamente</string>
+    <string name="mensaje_error">Problemas al conectar con el servidor</string>
     <string name="titulo_editar">Editar inmueble</string>
     <string name="duplicado">Inmueble duplicada</string>
     <string name="vacio">Algun/os campos vacíos</string>

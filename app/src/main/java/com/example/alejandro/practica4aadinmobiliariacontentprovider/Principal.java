@@ -68,6 +68,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
     private ContentValues datosInmuebleNuevo;
     private AlertDialog alerta;
     private String ip="192.168.1.37:8080";
+    private Boolean error=false;
 
 
 
@@ -572,8 +573,10 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
+                error=true;
             } catch (IOException e) {
                 e.printStackTrace();
+                error=true;
             }
 
             return r;
@@ -581,7 +584,11 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
 
         @Override
         protected void onPostExecute(String strings) {
-            tostada(getString(R.string.mensaje_subir));
+            if(error==true) {
+                tostada(getString(R.string.mensaje_subir));
+            }else{
+                tostada(getString(R.string.mensaje_error));
+            }
             cargarCursor();
             visualizarInmuebles();
         }
