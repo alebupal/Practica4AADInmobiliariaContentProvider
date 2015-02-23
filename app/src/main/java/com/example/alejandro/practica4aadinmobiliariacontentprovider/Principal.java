@@ -561,10 +561,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                         Log.v("foto",carpetaFotos.getAbsolutePath() + "/" + archivosCarpetaFotos[j]);
 
                     }
-                    for (int j=0;j<archivosCarpetaFotos.length;j++){
-                        File f=new File(carpetaFotos.getAbsolutePath() + "/" + archivosCarpetaFotos[j]);
-                        f.delete();
-                    }
+                    eliminarCarpetaFotoPorID(Integer.parseInt(cu.getString(0).toString()));
                     Uri uri= Contrato.TablaInmueble.CONTENT_URI;
                     String where= Contrato.TablaInmueble._ID+"=?";
                     String[] args= new String[]{cu.getString(0).toString()+""};
@@ -588,6 +585,7 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
                 tostada(getString(R.string.mensaje_subir));
             }else{
                 tostada(getString(R.string.mensaje_error));
+                error=false;
             }
             cargarCursor();
             visualizarInmuebles();
