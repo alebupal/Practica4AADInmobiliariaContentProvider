@@ -3,12 +3,14 @@ package com.example.alejandro.practica4aadinmobiliariacontentprovider;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -505,6 +507,13 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
     }
 
     class Subir extends AsyncTask<String,Integer,String> {
+        ProgressDialog pb;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pb=ProgressDialog.show(Principal.this, "Subida","Subiendo datos", true);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+        }
 
         public String postFile(String urlPeticion, String nombreParametro, String nombreArchivo) {
             String resultado="";
@@ -581,6 +590,8 @@ public class Principal extends ActionBarActivity implements LoaderManager.Loader
 
         @Override
         protected void onPostExecute(String strings) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            pb.dismiss();
             if(error==false) {
                 tostada(getString(R.string.mensaje_subir));
             }else{
